@@ -327,7 +327,13 @@ class OptionParser(object):
         if opt not in self._long_opt:
             possibilities = [word for word in self._long_opt
                              if word.startswith(opt)]
-            raise NoSuchOption(opt, possibilities=possibilities, ctx=self.ctx)
+            sort_possibilities = True
+            if not possibilities:
+                import difflib
+                possibilities = difflib.get_close_matches(opt, self._long_opt)
+                sort_possibilities = False
+            raise NoSuchOption(opt, possibilities=possibilities, ctx=self.ctx,
+                               sort_possibilities=sort_possibilities)
 
         option = self._long_opt[opt]
         if option.takes_value:

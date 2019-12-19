@@ -161,12 +161,13 @@ class NoSuchOption(UsageError):
     """
 
     def __init__(self, option_name, message=None, possibilities=None,
-                 ctx=None):
+                 ctx=None, sort_possibilities=True):
         if message is None:
             message = 'no such option: %s' % option_name
         UsageError.__init__(self, message, ctx)
         self.option_name = option_name
         self.possibilities = possibilities
+        self.sort_possibilities = sort_possibilities
 
     def format_message(self):
         bits = [self.message]
@@ -174,7 +175,10 @@ class NoSuchOption(UsageError):
             if len(self.possibilities) == 1:
                 bits.append('Did you mean %s?' % self.possibilities[0])
             else:
-                possibilities = sorted(self.possibilities)
+                if self.sort_possibilities:
+                    possibilities = sorted(self.possibilities)
+                else:
+                    possibilities = self.possibilities
                 bits.append('(Possible options: %s)' % ', '.join(possibilities))
         return '  '.join(bits)
 
